@@ -662,13 +662,15 @@ app.get('/getUnassignedMembers', async (req, res) => {
         nextPageToken = response.next_cursor;
       } while (nextPageToken);
 
-      const formattedRecords = allRecords.map(record => ({
+      let formattedRecords = allRecords.map(record => ({
         id: record.id,
-        name: record.properties.Names.title[0]?.plain_text.trim() || '',
+        created_time: record.created_time,
+        last_edited_time: record.last_edited_time,
+        position: record.properties.Position.multi_select.map(opt => opt.name) || [],
         email: record.properties.Email.email || '',
-        team: record.properties.Team.multi_select[0].name ?? '',
-        cohort: record.properties.Cohort.select?.name,
+        name: record.properties.Names.title[0]?.plain_text || '',
       }));
+      // formattedRecords = allRecords;
 
       // res.setHeader("Vercel-CDN-Cache-Control", "max-age=604800");
       res.status(200).json(formattedRecords);
